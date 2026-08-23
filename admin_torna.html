@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4 Csapatos Teke - Adminisztráció</title>
+<style>
+    body { font-family: sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
+    .header-panel { margin-bottom: 20px; text-align: center; }
+    .header-panel input {
+        font-size: 1.4rem; padding: 8px 12px; width: 80%; max-width: 500px;
+        background: #2a2a2a; border: 2px solid #3fb950; color: #ffff00;
+        font-weight: bold; border-radius: 6px; text-align: center;
+    }
+    .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
+    .team-card { background: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #333; }
+    .team-title { font-size: 1.1rem; font-weight: bold; color: #3fb950; margin-bottom: 10px; width: 95%; background: #2a2a2a; border: 1px solid #444; padding: 6px; border-radius: 4px; text-align: center; }
+    .player-row { display: grid; grid-template-columns: 1fr repeat(4, 45px) 45px; gap: 4px; align-items: center; margin-bottom: 6px; background: #252525; padding: 4px; border-radius: 4px; }
+    .player-row input { background: #1a1a1a; border: 1px solid #444; color: white; padding: 4px; border-radius: 3px; font-size: 0.85rem; text-align: center; }
+    .player-row input.p-name { text-align: left; font-weight: bold; width: 90%; }
+    .row-header { display: grid; grid-template-columns: 1fr repeat(4, 45px) 45px; gap: 4px; text-align: center; font-size: 0.75rem; font-weight: bold; color: #8b949e; margin-bottom: 4px; }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="header-panel">
+    <input type="text" id="tournamentTitle" value="4 CSAPATOS TORNA" placeholder="Torna Neve" oninput="sendData()">
+</div>
+
+<div class="teams-grid" id="teamsContainer"></div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSy...",
+    authDomain: "teke-eredmenyek.firebaseapp.com",
+    databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
+    projectId: "teke-eredmenyek",
+    storageBucket: "teke-eredmenyek.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function init() {
+    const container = document.getElementById('teamsContainer');
+    for (let t = 0; t < 4; t++) {
+        container.innerHTML += `
+            <div class="team-card" id="team-${t}">
+                <input type="text" class="team-title" value="${t+1}. Csapat" placeholder="Csapat neve" oninput="sendData()">
+                <div class="row-header">
+                    <span>Név</span><span>S1</span><span>S2</span><span>S3</span><span>S4</span><span>Üres</span>
+                </div>
+                ${[0,1,2,3].map(p => `
+                    <div class="player-row" data-player="${p}">
+                        <input type="text" class="p-name" placeholder="Játékos ${p+1}" oninput="sendData()">
+                        <input type="number" class="p-s0" oninput="sendData()">
+                        <input type="number" class="p-s1" oninput="sendData()">
+                        <input type="number" class="p-s2" oninput="sendData()">
+                        <input type="number" class="p-s3" oninput="sendData()">
+                        <input type="number" class="p-ures" oninput="sendData()">
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+}
+
+function sendData() {
+    const title = document.getElementById('tournamentTitle').value || '4 CSAPATOS TORNA';
+    const teams = [];
+
+    for (let t = 0; t < 4; t++) {
+        const card = document.getElementById(`team-${t}`);
+        const teamName = card.querySelector('.team-title').value || `${t+1}. Csapat`;
+        const players = [];
+        let teamTotal = 0;
+        let teamUres = 0;
+
+        card.querySelectorAll('.player-row').forEach(row => {
+            const name = row.querySelector('.p-name').value;
+            const sets = [];
+            let pTotal = 0;
+
+            for (let s = 0; s < 4; s++) {
+                const val = parseInt(row.querySelector(`.p-s${s}`).value) || 0;
+                sets.push(val);
+                pTotal += val;
+            }
+
+            const ures = parseInt(row.querySelector('.p-ures').value) || 0;
+            teamTotal += pTotal;
+            teamUres += ures;
+
+            players.push({
+                name: name || 'Játékos',
+                sets: sets,
+                total: pTotal,
+                ures: ures
+            });
+        });
+
+        teams.push({
+            id: t,
+            name: teamName,
+            players: players,
+            total: teamTotal,
+            ures: teamUres
+        });
+    }
+
+    db.ref('csapat4_bowling').set({
+        title: title,
+        teams: teams
+    });
+}
+
+init();
+</script>
+</body>
+</html>

@@ -63,6 +63,7 @@
     .total-col { font-weight: bold; }
 </style>
 
+<!-- Firebase SDK-k -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
@@ -75,13 +76,10 @@
 
 <script>
 const firebaseConfig = {
-    apiKey: "AIzaSy...",
     authDomain: "teke-eredmenyek.firebaseapp.com",
     databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
     projectId: "teke-eredmenyek",
-    storageBucket: "teke-eredmenyek.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+    storageBucket: "teke-eredmenyek.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -116,7 +114,6 @@ function getUresColorClass(val) {
 }
 
 function renderBoard(teams) {
-    // Rangsorolás: 1. Össz fa (csökkenő), 2. Kevesebb üres (növekvő)
     const sorted = [...teams].sort((a, b) => {
         if (b.total !== a.total) return b.total - a.total;
         return a.ures - b.ures;

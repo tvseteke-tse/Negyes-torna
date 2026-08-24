@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -21,6 +22,7 @@
     .row-header { display: grid; grid-template-columns: 1fr repeat(4, 45px) 45px; gap: 4px; text-align: center; font-size: 0.75rem; font-weight: bold; color: #8b949e; margin-bottom: 4px; }
 </style>
 
+<!-- Firebase SDK-k -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
@@ -34,13 +36,10 @@
 
 <script>
 const firebaseConfig = {
-    apiKey: "AIzaSy...",
     authDomain: "teke-eredmenyek.firebaseapp.com",
     databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
     projectId: "teke-eredmenyek",
-    storageBucket: "teke-eredmenyek.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+    storageBucket: "teke-eredmenyek.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -87,6 +86,43 @@ function sendData() {
             let pTotal = 0;
 
             for (let s = 0; s < 4; s++) {
+                const val = parseInt(row.querySelector(`.p-s${s}`).value) || 0;
+                sets.push(val);
+                pTotal += val;
+            }
+
+            const ures = parseInt(row.querySelector('.p-ures').value) || 0;
+            teamTotal += pTotal;
+            teamUres += ures;
+
+            players.push({
+                name: name || 'Játékos',
+                sets: sets,
+                total: pTotal,
+                ures: ures
+            });
+        });
+
+        teams.push({
+            id: t,
+            name: teamName,
+            players: players,
+            total: teamTotal,
+            ures: teamUres
+        });
+    }
+
+    db.ref('csapat4_bowling').set({
+        title: title,
+        teams: teams
+    });
+}
+
+init();
+</script>
+</body>
+</html>
+for (let s = 0; s < 4; s++) {
                 const val = parseInt(row.querySelector(`.p-s${s}`).value) || 0;
                 sets.push(val);
                 pTotal += val;

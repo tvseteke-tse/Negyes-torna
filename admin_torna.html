@@ -13,7 +13,7 @@
         padding: 15px;
     }
     .admin-container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
     }
     h1 {
@@ -51,7 +51,7 @@
     .btn:hover { background: #1d4ed8; }
     .teams-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
         gap: 20px;
     }
     .team-card {
@@ -74,9 +74,9 @@
     }
     table { width: 100%; border-collapse: collapse; }
     th { color: #94a3b8; font-size: 0.85rem; padding: 6px; text-align: center; }
-    td { padding: 4px; text-align: center; }
-    input[type="text"] { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
-    input[type="number"] { width: 55px; padding: 6px; text-align: center; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #fff; }
+    td { padding: 3px; text-align: center; }
+    input[type="text"] { width: 100%; padding: 5px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+    input[type="number"] { width: 50px; padding: 5px; text-align: center; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #fff; }
     .status-msg { text-align: center; color: #22c55e; font-weight: bold; height: 20px; margin-bottom: 10px; }
 </style>
 
@@ -86,13 +86,13 @@
 <body>
 
 <div class="admin-container">
-    <h1>4 Csapatos Teketorna - Kezelőfelület</h1>
+    <h1>4 Csapatos Teketorna - Kezelőfelület (6 Játékos / Csapat)</h1>
     <div id="statusMsg" class="status-msg"></div>
 
     <div class="title-box">
         <label style="font-weight:bold;">Torna neve:</label>
         <input type="text" id="tournamentTitle" value="4 CSAPATOS TORNA">
-        <button class="btn" onclick="saveData()">Adatok Mentése & Kijelző Frissítése</button>
+        <button class="btn" onclick="saveData()">Mentés & Kijelző Frissítése</button>
     </div>
 
     <div class="teams-grid" id="teamsContainer"></div>
@@ -116,7 +116,7 @@ let currentData = {
     title: "4 CSAPATOS TORNA",
     teams: Array.from({ length: 4 }, (_, i) => ({
         name: (i + 1) + ". CSAPAT",
-        players: Array.from({ length: 4 }, () => ({
+        players: Array.from({ length: 6 }, () => ({
             name: "Játékos",
             sets: [0, 0, 0, 0],
             ures: 0,
@@ -129,7 +129,14 @@ let currentData = {
 
 db.ref('csapat4_bowling').on('value', (snapshot) => {
     const data = snapshot.val();
-    if (data) {
+    if (data && data.teams) {
+        // Garantáljuk a 6 játékost csapatonként
+        data.teams.forEach(t => {
+            if (!t.players) t.players = [];
+            while (t.players.length < 6) {
+                t.players.push({ name: "Játékos", sets: [0,0,0,0], ures: 0, total: 0 });
+            }
+        });
         currentData = data;
         document.getElementById('tournamentTitle').value = currentData.title || "4 CSAPATOS TORNA";
     }
@@ -227,4 +234,3 @@ function showStatus(msg) {
 </script>
 </body>
 </html>
- 

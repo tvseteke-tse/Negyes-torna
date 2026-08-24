@@ -1,39 +1,167 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <title>4 Csapatos Teke - Élő Kijelző</title>
-    <style>
-        body {
-            background-color: #00122e;
-            color: #ffff00;
-            margin: 0;
-            padding: 15px;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            user-select: none;
-        }
-        .board-container {
-            max-width: 1500px;
-            margin: 0 auto;
-            background: #001c47;
-            border: 3px solid #0044aa;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 0 25px rgba(0, 50, 150, 0.6);
-        }
-        h1 {
-            text-align: center;
-            margin: 0 0 15px 0;
-            font-size: 2.2rem;
-            color: #ffff00;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 255, 0, 0.4);
-        }
-        .teams-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+<meta charset="UTF-8">
+<title>4 Csapatos Teke - Élő Kijelző</title>
+<style>
+    body {
+        background-color: #00122e;
+        color: #ffff00;
+        margin: 0;
+        padding: 15px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        user-select: none;
+    }
+    .board-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        background: #001c47;
+        border: 3px solid #0044aa;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 0 25px rgba(0, 50, 150, 0.6);
+    }
+    h1 {
+        text-align: center;
+        margin: 0 0 15px 0;
+        font-size: 2.2rem;
+        color: #ffff00;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.4);
+    }
+    .teams-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .team-box {
+        background: rgba(0, 28, 71, 0.8);
+        border: 2px solid #0044aa;
+        border-radius: 6px;
+        padding: 10px;
+    }
+    .team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #0044aa;
+        padding-bottom: 5px;
+        margin-bottom: 8px;
+    }
+    .team-name { font-size: 1.3rem; font-weight: bold; color: #ffff00; text-transform: uppercase; }
+    .team-score { font-size: 1.4rem; font-weight: bold; color: #00ff66; }
+    
+    table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; }
+    th { color: #8b949e; padding: 4px 2px; font-size: 0.8rem; border-bottom: 1px solid #002b66; }
+    td { padding: 5px 2px; text-align: center; border-bottom: 1px solid rgba(0, 68, 170, 0.3); font-size: 0.95rem; font-weight: bold; }
+    .name-col { text-align: left; font-family: sans-serif; color: #ffffff; width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .color-green { color: #00ff66 !important; text-shadow: 0 0 5px rgba(0, 255, 102, 0.4); }
+    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 5px rgba(255, 255, 0, 0.4); }
+    .color-red { color: #ff3333 !important; text-shadow: 0 0 5px rgba(255, 51, 51, 0.4); }
+    .total-col { font-weight: bold; }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="board-container">
+    <h1 id="boardTitle">4 CSAPATOS TORNA</h1>
+    <div class="teams-grid" id="boardGrid"></div>
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyD8o7xyCtxTJlQcM8z-29XTBOpBXrYbjOM",
+    authDomain: "teke-eredmenyek.firebaseapp.com",
+    databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
+    projectId: "teke-eredmenyek",
+    storageBucket: "teke-eredmenyek.appspot.com"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+db.ref('csapat4_bowling').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        if (data.title) document.getElementById('boardTitle').innerText = data.title.toUpperCase();
+        if (data.teams) renderBoard(data.teams);
+    }
+});
+
+function getSetColorClass(val) {
+    if (val === 0) return '';
+    if (val > 150) return 'color-green';
+    if (val < 120) return 'color-red';
+    return 'color-yellow';
+}
+
+function getTotalColorClass(val) {
+    if (val === 0) return '';
+    if (val > 600) return 'color-green';
+    if (val < 500) return 'color-red';
+    return 'color-yellow';
+}
+
+function getUresColorClass(val) {
+    if (val === 0) return 'color-green';
+    if (val <= 5) return 'color-yellow';
+    return 'color-red';
+}
+
+function renderBoard(teams) {
+    const sorted = [...teams].sort((a, b) => {
+        if (b.total !== a.total) return b.total - a.total;
+        return a.ures - b.ures;
+    });
+
+    const grid = document.getElementById('boardGrid');
+    grid.innerHTML = '';
+
+    sorted.forEach((team, rankIdx) => {
+        const box = document.createElement('div');
+        box.className = 'team-box';
+
+        let rowsHTML = '';
+        team.players.forEach(p => {
+            const setsHTML = p.sets.map(s => s === 0 ? '<td>-</td>' : '<td class="' + getSetColorClass(s) + '">' + s + '</td>').join('');
+            rowsHTML += '<tr>' +
+                '<td class="name-col">' + p.name + '</td>' +
+                setsHTML +
+                '<td class="' + getUresColorClass(p.ures) + '">' + p.ures + '</td>' +
+                '<td class="total-col ' + getTotalColorClass(p.total) + '">' + p.total + '</td>' +
+            '</tr>';
+        });
+
+        box.innerHTML = '<div class="team-header">' +
+                '<span class="team-name">' + (rankIdx + 1) + '. ' + team.name + '</span>' +
+                '<span class="team-score">' + team.total + ' fa</span>' +
+            '</div>' +
+            '<table>' +
+                '<thead>' +
+                    '<tr>' +
+                        '<th style="text-align:left;">Név</th>' +
+                        '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
+                        '<th>Üres</th>' +
+                        '<th>Össz.</th>' +
+                    '</tr>' +
+                '</thead>' +
+                '<tbody>' +
+                    rowsHTML +
+                '</tbody>' +
+            '</table>';
+        grid.appendChild(box);
+    });
+}
+</script>
+</body>
+</html>
         }
         .team-box {
             background: rgba(0, 28, 71, 0.8);

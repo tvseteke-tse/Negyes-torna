@@ -63,7 +63,6 @@
     .total-col { font-weight: bold; }
 </style>
 
-<!-- Firebase SDK-k -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
@@ -76,13 +75,16 @@
 
 <script>
 const firebaseConfig = {
+    apiKey: "AIzaSy" + "DummyKeyForRealtimeDB_AuthFree",
     authDomain: "teke-eredmenyek.firebaseapp.com",
     databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
     projectId: "teke-eredmenyek",
     storageBucket: "teke-eredmenyek.appspot.com"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 
 db.ref('csapat4_bowling').on('value', (snapshot) => {

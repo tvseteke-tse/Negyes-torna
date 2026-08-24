@@ -49,6 +49,16 @@
         padding-bottom: 4px;
         margin-bottom: 6px;
     }
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .team-logo {
+        width: 35px;
+        height: 35px;
+        object-fit: contain;
+    }
     .team-name { font-size: 1.2rem; font-weight: bold; color: #ffff00; text-transform: uppercase; }
     .team-score { font-size: 1.3rem; font-weight: bold; color: #00ff66; }
     
@@ -139,8 +149,13 @@ function renderBoard(teams) {
             '</tr>';
         });
 
+        const logoHTML = team.logo ? '<img src="' + team.logo + '" class="team-logo" alt="Címer">' : '';
+
         box.innerHTML = '<div class="team-header">' +
-                '<span class="team-name">' + (rankIdx + 1) + '. ' + team.name + '</span>' +
+                '<div class="team-info">' +
+                    logoHTML +
+                    '<span class="team-name">' + (rankIdx + 1) + '. ' + team.name + '</span>' +
+                '</div>' +
                 '<span class="team-score">' + team.total + ' fa</span>' +
             '</div>' +
             '<table>' +
@@ -162,4 +177,3 @@ function renderBoard(teams) {
 </script>
 </body>
 </html>
- 

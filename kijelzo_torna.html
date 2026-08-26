@@ -4,73 +4,127 @@
 <meta charset="UTF-8">
 <title>4 Csapatos Teke - Élő Kijelző</title>
 <style>
+    * {
+        box-sizing: border-box;
+    }
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Megakadályozza a görgetősávok megjelenését */
+    }
     body {
         background-color: #00122e;
         color: #ffff00;
-        margin: 0;
-        padding: 10px;
+        padding: 15px;
         font-family: 'Segoe UI', Arial, sans-serif;
         user-select: none;
+        display: flex;
+        flex-direction: column;
     }
     .board-container {
-        max-width: 1600px;
+        width: 100%;
+        max-width: 1880px;
+        height: 100%;
         margin: 0 auto;
         background: #001c47;
-        border: 3px solid #0044aa;
-        border-radius: 10px;
-        padding: 10px;
-        box-shadow: 0 0 25px rgba(0, 50, 150, 0.6);
+        border: 4px solid #0044aa;
+        border-radius: 12px;
+        padding: 15px 20px;
+        box-shadow: 0 0 35px rgba(0, 50, 150, 0.8);
+        display: flex;
+        flex-direction: column;
     }
     h1 {
         text-align: center;
-        margin: 0 0 10px 0;
-        font-size: 2rem;
+        margin: 0 0 15px 0;
+        font-size: 3rem; /* Növelt címsor betűméret */
         color: #ffff00;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
         text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(255, 255, 0, 0.4);
+        text-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+        flex-shrink: 0;
     }
     .teams-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        grid-template-rows: 1fr 1fr;
+        gap: 20px;
+        flex-grow: 1;
     }
     .team-box {
-        background: rgba(0, 28, 71, 0.8);
-        border: 2px solid #0044aa;
-        border-radius: 6px;
-        padding: 8px;
+        background: rgba(0, 28, 71, 0.85);
+        border: 3px solid #0044aa;
+        border-radius: 8px;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .team-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid #0044aa;
-        padding-bottom: 4px;
-        margin-bottom: 6px;
+        border-bottom: 3px solid #0044aa;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
     }
     .team-info {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
     }
     .team-logo {
-        width: 35px;
-        height: 35px;
+        width: 50px; /* Megnövelt logó méret */
+        height: 50px;
         object-fit: contain;
     }
-    .team-name { font-size: 1.2rem; font-weight: bold; color: #ffff00; text-transform: uppercase; }
-    .team-score { font-size: 1.3rem; font-weight: bold; color: #00ff66; }
+    .team-name { 
+        font-size: 1.8rem; /* Növelt csapatnév */
+        font-weight: bold; 
+        color: #ffff00; 
+        text-transform: uppercase; 
+    }
+    .team-score { 
+        font-size: 2.2rem; /* Növelt összpontszám betűméret */
+        font-weight: bold; 
+        color: #00ff66; 
+    }
     
-    table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; }
-    th { color: #8b949e; padding: 2px; font-size: 0.75rem; border-bottom: 1px solid #002b66; }
-    td { padding: 3px 2px; text-align: center; border-bottom: 1px solid rgba(0, 68, 170, 0.3); font-size: 0.85rem; font-weight: bold; }
-    .name-col { text-align: left; font-family: sans-serif; color: #ffffff; width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        font-family: 'Courier New', Courier, monospace; 
+        flex-grow: 1;
+    }
+    th { 
+        color: #8b949e; 
+        padding: 6px 4px; 
+        font-size: 1.1rem; /* Növelt fejléc betűméret */
+        border-bottom: 2px solid #002b66; 
+    }
+    td { 
+        padding: 8px 4px; /* Magasabb sorok */
+        text-align: center; 
+        border-bottom: 1px solid rgba(0, 68, 170, 0.4); 
+        font-size: 1.4rem; /* Növelt adatsor betűméret */
+        font-weight: bold; 
+    }
+    .name-col { 
+        text-align: left; 
+        font-family: sans-serif; 
+        color: #ffffff; 
+        width: 180px; /* Szélesebb név oszlop */
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        font-size: 1.3rem;
+    }
     
-    .color-green { color: #00ff66 !important; text-shadow: 0 0 5px rgba(0, 255, 102, 0.4); }
-    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 5px rgba(255, 255, 0, 0.4); }
-    .color-red { color: #ff3333 !important; text-shadow: 0 0 5px rgba(255, 51, 51, 0.4); }
-    .total-col { font-weight: bold; }
+    .color-green { color: #00ff66 !important; text-shadow: 0 0 8px rgba(0, 255, 102, 0.5); }
+    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 8px rgba(255, 255, 0, 0.5); }
+    .color-red { color: #ff3333 !important; text-shadow: 0 0 8px rgba(255, 51, 51, 0.5); }
+    .total-col { font-weight: bold; font-size: 1.5rem; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>

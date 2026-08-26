@@ -2,94 +2,234 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
-<title>4 Csapatos Teke - Élő Kijelző</title>
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+<title>Négyes Torna Kijelző (1080p)</title>
 <style>
-    body {
-        background-color: #00122e;
-        color: #ffff00;
+    * {
+        box-sizing: border-box;
         margin: 0;
-        padding: 10px;
+        padding: 0;
+    }
+    html, body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #000c1f;
+        color: #ffff00;
         font-family: 'Segoe UI', Arial, sans-serif;
         user-select: none;
     }
-    .board-container {
-        max-width: 1600px;
-        margin: 0 auto;
-        background: #001c47;
-        border: 3px solid #0044aa;
-        border-radius: 10px;
-        padding: 10px;
-        box-shadow: 0 0 25px rgba(0, 50, 150, 0.6);
+    
+    /* Fő tároló: teljes képernyő kitöltése */
+    .container {
+        width: 100%;
+        height: 100vh;
+        padding: 15px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
-    h1 {
+
+    /* Fejléc */
+    .header-title {
         text-align: center;
-        margin: 0 0 10px 0;
-        font-size: 2rem;
+        font-size: 2.2rem;
+        font-weight: bold;
         color: #ffff00;
         letter-spacing: 2px;
         text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(255, 255, 0, 0.4);
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        padding-bottom: 5px;
+        flex: 0 0 auto;
     }
-    .teams-grid {
+
+    /* A 4 blokk rácsos elrendezése - kitölti a képernyőt lefelé */
+    .grid-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
         gap: 15px;
+        flex: 1;
+        margin-top: 5px;
     }
-    .team-box {
-        background: rgba(0, 28, 71, 0.8);
+
+    /* Egy-egy csapat kártyája */
+    .team-card {
+        background-color: #001c47;
         border: 2px solid #0044aa;
-        border-radius: 6px;
-        padding: 8px;
+        border-radius: 12px;
+        padding: 12px 18px;
+        box-shadow: 0 0 20px rgba(0, 50, 150, 0.4);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
+
+    /* Csapatnév és fa összefoglaló fejléc */
     .team-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #ffff00;
         border-bottom: 2px solid #0044aa;
-        padding-bottom: 4px;
-        margin-bottom: 6px;
+        padding-bottom: 6px;
+        margin-bottom: 8px;
     }
-    .team-info {
+    .team-header .pins-total {
+        color: #00ff66;
+        font-size: 2rem;
+        text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+    }
+
+    /* Táblázat méretezése */
+    .table-container {
+        flex: 1;
         display: flex;
         align-items: center;
-        gap: 10px;
     }
-    .team-logo {
-        width: 35px;
-        height: 35px;
-        object-fit: contain;
+    .board-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Courier New', Courier, monospace;
     }
-    .team-name { font-size: 1.2rem; font-weight: bold; color: #ffff00; text-transform: uppercase; }
-    .team-score { font-size: 1.3rem; font-weight: bold; color: #00ff66; }
-    
-    table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; }
-    th { color: #8b949e; padding: 2px; font-size: 0.75rem; border-bottom: 1px solid #002b66; }
-    td { padding: 3px 2px; text-align: center; border-bottom: 1px solid rgba(0, 68, 170, 0.3); font-size: 0.85rem; font-weight: bold; }
-    .name-col { text-align: left; font-family: sans-serif; color: #ffffff; width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    
-    .color-green { color: #00ff66 !important; text-shadow: 0 0 5px rgba(0, 255, 102, 0.4); }
-    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 5px rgba(255, 255, 0, 0.4); }
-    .color-red { color: #ff3333 !important; text-shadow: 0 0 5px rgba(255, 51, 51, 0.4); }
-    .total-col { font-weight: bold; }
+    .board-table th {
+        color: #ffff00;
+        font-size: 1.1rem;
+        padding: 6px 4px;
+        border-bottom: 2px solid #0044aa;
+        text-align: center;
+    }
+    .board-table td {
+        padding: 8px 4px; /* Magasabb sorok! */
+        text-align: center;
+        font-size: 1.45rem; /* Nagyobb számok */
+        font-weight: bold;
+        border-bottom: 1px solid #002b66;
+        color: #ffffff;
+    }
+
+    /* Nevek és kiemelések */
+    .name-col {
+        text-align: left !important;
+        color: #ffff00;
+        width: 32%;
+        font-family: sans-serif;
+        font-size: 1.3rem; /* Nagyobb névbetűk */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .val-total {
+        color: #00ff66;
+        font-size: 1.5rem;
+    }
 </style>
 
+<!-- Firebase SDK-k -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-<div class="board-container">
-    <h1 id="boardTitle">4 CSAPATOS TORNA</h1>
-    <div class="teams-grid" id="boardGrid"></div>
+<div class="container">
+    <div class="header-title" id="tournamentTitle">NÉGYES TORNA</div>
+
+    <div class="grid-container">
+        <!-- 1. CSAPAT -->
+        <div class="team-card">
+            <div class="team-header">
+                <span id="t1Name">1. CSAPAT</span>
+                <span class="pins-total" id="t1TotalPins">0 fa</span>
+            </div>
+            <div class="table-container">
+                <table class="board-table">
+                    <thead>
+                        <tr>
+                            <th class="name-col">Név</th>
+                            <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
+                            <th>Üres</th>
+                            <th>Össz.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="t1Body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. CSAPAT -->
+        <div class="team-card">
+            <div class="team-header">
+                <span id="t2Name">2. CSAPAT</span>
+                <span class="pins-total" id="t2TotalPins">0 fa</span>
+            </div>
+            <div class="table-container">
+                <table class="board-table">
+                    <thead>
+                        <tr>
+                            <th class="name-col">Név</th>
+                            <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
+                            <th>Üres</th>
+                            <th>Össz.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="t2Body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. CSAPAT -->
+        <div class="team-card">
+            <div class="team-header">
+                <span id="t3Name">3. CSAPAT</span>
+                <span class="pins-total" id="t3TotalPins">0 fa</span>
+            </div>
+            <div class="table-container">
+                <table class="board-table">
+                    <thead>
+                        <tr>
+                            <th class="name-col">Név</th>
+                            <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
+                            <th>Üres</th>
+                            <th>Össz.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="t3Body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. CSAPAT -->
+        <div class="team-card">
+            <div class="team-header">
+                <span id="t4Name">4. CSAPAT</span>
+                <span class="pins-total" id="t4TotalPins">0 fa</span>
+            </div>
+            <div class="table-container">
+                <table class="board-table">
+                    <thead>
+                        <tr>
+                            <th class="name-col">Név</th>
+                            <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
+                            <th>Üres</th>
+                            <th>Össz.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="t4Body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 const firebaseConfig = {
-    apiKey: "AIzaSyD8o7xyCtxTJlQcM8z-29XTBOpBXrYbjOM",
+    apiKey: "aizasyd8o7xyctxtjlqcm8z-29xtbopbxrybjom",
     authDomain: "teke-eredmenyek.firebaseapp.com",
     databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
     projectId: "teke-eredmenyek",
-    storageBucket: "teke-eredmenyek.firebasestorage.app"
+    storageBucket: "teke-eredmenyek.appspot.com"
 };
 
 if (!firebase.apps.length) {
@@ -97,82 +237,56 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
-db.ref('csapat4_bowling').on('value', (snapshot) => {
+db.ref('negyes_torna_bowling').on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
-        if (data.title) document.getElementById('boardTitle').innerText = data.title.toUpperCase();
-        if (data.teams) renderBoard(data.teams);
+        if (data.title) {
+            document.getElementById('tournamentTitle').innerText = data.title.toUpperCase();
+        }
+
+        for (let i = 1; i <= 4; i++) {
+            const teamData = data[`team${i}`];
+            if (teamData) {
+                renderTeam(i, teamData);
+            }
+        }
     }
 });
 
-function getSetColorClass(val) {
-    if (val === 0) return '';
-    if (val > 150) return 'color-green';
-    if (val < 120) return 'color-red';
-    return 'color-yellow';
-}
+function renderTeam(teamIdx, teamData) {
+    document.getElementById(`t${teamIdx}Name`).innerText = `${teamIdx}. ${teamData.name || 'CSAPAT ' + teamIdx}`;
+    
+    const tbody = document.getElementById(`t${teamIdx}Body`);
+    tbody.innerHTML = '';
+    
+    let grandTotal = 0;
 
-function getTotalColorClass(val) {
-    if (val === 0) return '';
-    if (val > 600) return 'color-green';
-    if (val < 500) return 'color-red';
-    return 'color-yellow';
-}
+    if (teamData.players && Array.isArray(teamData.players)) {
+        teamData.players.forEach(p => {
+            const s1 = parseInt(p.s1) || 0;
+            const s2 = parseInt(p.s2) || 0;
+            const s3 = parseInt(p.s3) || 0;
+            const s4 = parseInt(p.s4) || 0;
+            const ures = p.ures !== undefined && p.ures !== '' ? p.ures : 0;
+            
+            const total = s1 + s2 + s3 + s4;
+            grandTotal += total;
 
-function getUresColorClass(val) {
-    if (val === 0) return 'color-green';
-    if (val <= 5) return 'color-yellow';
-    return 'color-red';
-}
-
-function renderBoard(teams) {
-    const sorted = [...teams].sort((a, b) => {
-        if (b.total !== a.total) return b.total - a.total;
-        return a.ures - b.ures;
-    });
-
-    const grid = document.getElementById('boardGrid');
-    grid.innerHTML = '';
-
-    sorted.forEach((team, rankIdx) => {
-        const box = document.createElement('div');
-        box.className = 'team-box';
-
-        let rowsHTML = '';
-        team.players.forEach(p => {
-            const setsHTML = p.sets.map(s => s === 0 ? '<td>-</td>' : '<td class="' + getSetColorClass(s) + '">' + s + '</td>').join('');
-            rowsHTML += '<tr>' +
-                '<td class="name-col">' + p.name + '</td>' +
-                setsHTML +
-                '<td class="' + getUresColorClass(p.ures) + '">' + p.ures + '</td>' +
-                '<td class="total-col ' + getTotalColorClass(p.total) + '">' + p.total + '</td>' +
-            '</tr>';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="name-col">${p.name || '-'}</td>
+                <td>${s1 || '-'}</td>
+                <td>${s2 || '-'}</td>
+                <td>${s3 || '-'}</td>
+                <td>${s4 || '-'}</td>
+                <td>${ures}</td>
+                <td class="val-total">${total || '0'}</td>
+            `;
+            tbody.appendChild(tr);
         });
+    }
 
-        const logoHTML = team.logo ? '<img src="' + team.logo + '" class="team-logo" alt="Címer">' : '';
-
-        box.innerHTML = '<div class="team-header">' +
-                '<div class="team-info">' +
-                    logoHTML +
-                    '<span class="team-name">' + (rankIdx + 1) + '. ' + team.name + '</span>' +
-                '</div>' +
-                '<span class="team-score">' + team.total + ' fa</span>' +
-            '</div>' +
-            '<table>' +
-                '<thead>' +
-                    '<tr>' +
-                        '<th style="text-align:left;">Név</th>' +
-                        '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
-                        '<th>Üres</th>' +
-                        '<th>Össz.</th>' +
-                    '</tr>' +
-                '</thead>' +
-                '<tbody>' +
-                    rowsHTML +
-                '</tbody>' +
-            '</table>';
-        grid.appendChild(box);
-    });
+    document.getElementById(`t${teamIdx}TotalPins`).innerText = `${grandTotal} fa`;
 }
 </script>
 </body>

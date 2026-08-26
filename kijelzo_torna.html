@@ -51,7 +51,7 @@
         grid-template-rows: 1fr 1fr;
         gap: 10px;
         flex-grow: 1;
-        min-height: 0; /* Megakadályozza a grid túlfolyását */
+        min-height: 0;
     }
     .team-box {
         background: rgba(0, 28, 71, 0.85);
@@ -97,31 +97,31 @@
     table { 
         width: 100%; 
         border-collapse: collapse; 
-        font-family: 'Courier New', Courier, monospace; 
-        table-layout: fixed;
+        font-family: 'Courier New', Courier, monospace;
     }
     th { 
         color: #8b949e; 
-        padding: 2px 4px; 
-        font-size: 0.95rem; 
+        padding: 2px 2px; 
+        font-size: 0.9rem; 
         border-bottom: 2px solid #002b66; 
     }
     td { 
-        padding: 3px 4px; /* Kompakt sormagasság a 6 játékoshoz */
+        padding: 3px 2px; 
         text-align: center; 
         border-bottom: 1px solid rgba(0, 68, 170, 0.3); 
         font-size: 1.15rem; 
         font-weight: bold; 
     }
+    /* Megnövelt hely a neveknek, rugalmas törés nélkül */
     .name-col { 
         text-align: left; 
         font-family: sans-serif; 
         color: #ffffff; 
-        width: 38%;
+        width: 45%; 
         white-space: nowrap; 
         overflow: hidden; 
         text-overflow: ellipsis; 
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
     
     .color-green { color: #00ff66 !important; text-shadow: 0 0 6px rgba(0, 255, 102, 0.5); }
@@ -218,7 +218,7 @@ function renderBoard(teams) {
             '<table>' +
                 '<thead>' +
                     '<tr>' +
-                        '<th style="text-align:left;">Név</th>' +
+                        '<th style="text-align:left; width: 45%;">Név</th>' +
                         '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
                         '<th>Üres</th>' +
                         '<th>Össz.</th>' +

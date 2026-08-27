@@ -15,7 +15,7 @@
         overflow: hidden;
     }
     body {
-        background-color: #00122e;
+        background-color: #000d21;
         color: #ffff00;
         padding: 10px;
         font-family: 'Segoe UI', Arial, sans-serif;
@@ -27,11 +27,11 @@
         width: 100%;
         height: 100%;
         margin: 0 auto;
-        background: #001c47;
+        background: #00173d;
         border: 3px solid #0044aa;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 10px 14px;
-        box-shadow: 0 0 25px rgba(0, 50, 150, 0.8);
+        box-shadow: 0 0 30px rgba(0, 50, 150, 0.8), inset 0 0 15px rgba(0,0,0,0.5);
         display: flex;
         flex-direction: column;
     }
@@ -42,7 +42,7 @@
         color: #ffff00;
         letter-spacing: 2px;
         text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        text-shadow: 0 0 12px rgba(255, 255, 0, 0.6);
         flex-shrink: 0;
     }
     .teams-grid {
@@ -54,21 +54,22 @@
         min-height: 0;
     }
     .team-box {
-        background: rgba(0, 28, 71, 0.85);
-        border: 2px solid #0044aa;
-        border-radius: 8px;
-        padding: 10px 14px;
+        background: rgba(0, 20, 55, 0.9);
+        border: 2px solid #003b99;
+        border-radius: 10px;
+        padding: 10px 12px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         overflow: hidden;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
     }
     .team-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         border-bottom: 2px solid #0044aa;
-        padding-bottom: 8px;
+        padding-bottom: 6px;
         margin-bottom: 6px;
         flex-shrink: 0;
     }
@@ -81,38 +82,62 @@
         width: 44px;
         height: 44px;
         object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
     .team-name { 
         font-size: 1.7rem; 
         font-weight: bold; 
         color: #ffff00; 
         text-transform: uppercase; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
     .team-score { 
         font-size: 2rem; 
         font-weight: bold; 
         color: #00ff66; 
+        text-shadow: 0 0 8px rgba(0,255,102,0.4);
     }
     
+    /* Táblázat beállításai a különálló 3D kártya-sorokhoz */
     table { 
         width: 100%; 
-        border-collapse: collapse; 
+        border-collapse: separate; 
+        border-spacing: 0 5px; /* Sorok közötti függőleges rés */
         font-family: 'Courier New', Courier, monospace;
     }
     th { 
-        color: #8b949e; 
-        padding: 6px 4px; 
-        font-size: 1.15rem; 
-        border-bottom: 2px solid #002b66; 
+        color: #9cb0d4; 
+        padding: 4px 6px; 
+        font-size: 1.1rem; 
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
+    
+    /* 3D Kártya hatás a játékos soroknak */
+    tbody tr {
+        background: linear-gradient(180deg, #002866 0%, #001840 100%);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+        border-radius: 6px;
+    }
+    
+    /* Lekerekített sarkok a sorok szélén */
+    tbody tr td:first-child {
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+    }
+    tbody tr td:last-child {
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
     td { 
-        padding: 8px 4px; 
+        padding: 7px 4px; 
         text-align: center; 
-        border-bottom: 1px solid rgba(0, 68, 170, 0.3); 
         font-size: 1.45rem; 
         font-weight: bold; 
+        border: none;
     }
-    /* Megnövelt hely a neveknek, rugalmas törés nélkül */
+    
     .name-col { 
         text-align: left; 
         font-family: sans-serif; 
@@ -122,12 +147,14 @@
         overflow: hidden; 
         text-overflow: ellipsis; 
         font-size: 1.35rem;
+        padding-left: 10px; /* Belső eltolás a szélétől */
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
     
-    .color-green { color: #00ff66 !important; text-shadow: 0 0 6px rgba(0, 255, 102, 0.5); }
-    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 6px rgba(255, 255, 0, 0.5); }
-    .color-red { color: #ff3333 !important; text-shadow: 0 0 6px rgba(255, 51, 51, 0.5); }
-    .total-col { font-weight: bold; font-size: 1.55rem; }
+    .color-green { color: #00ff66 !important; text-shadow: 0 0 8px rgba(0, 255, 102, 0.6); }
+    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 8px rgba(255, 255, 0, 0.6); }
+    .color-red { color: #ff4444 !important; text-shadow: 0 0 8px rgba(255, 68, 68, 0.6); }
+    .total-col { font-weight: bold; font-size: 1.55rem; padding-right: 8px; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -218,7 +245,7 @@ function renderBoard(teams) {
             '<table>' +
                 '<thead>' +
                     '<tr>' +
-                        '<th style="text-align:left; width: 42%;">Név</th>' +
+                        '<th style="text-align:left; width: 42%; padding-left:10px;">Név</th>' +
                         '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
                         '<th>Üres</th>' +
                         '<th>Össz.</th>' +

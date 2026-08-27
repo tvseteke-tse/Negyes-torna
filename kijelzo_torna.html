@@ -37,8 +37,8 @@
     }
     h1 {
         text-align: center;
-        margin: 0 0 10px 0;
-        font-size: 2.5rem;
+        margin: 0 0 6px 0;
+        font-size: 2.2rem;
         color: #ffff00;
         letter-spacing: 2px;
         text-transform: uppercase;
@@ -57,7 +57,7 @@
         background: rgba(0, 20, 55, 0.9);
         border: 2px solid #003b99;
         border-radius: 10px;
-        padding: 10px 12px;
+        padding: 8px 12px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -69,58 +69,65 @@
         justify-content: space-between;
         align-items: center;
         border-bottom: 2px solid #0044aa;
-        padding-bottom: 6px;
-        margin-bottom: 6px;
+        padding-bottom: 4px;
+        margin-bottom: 4px;
         flex-shrink: 0;
     }
     .team-info {
         display: flex;
         align-items: center;
         gap: 12px;
+        max-width: 70%;
     }
     .team-logo {
-        width: 44px;
-        height: 44px;
+        width: 50px;
+        height: 50px;
         object-fit: contain;
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
+    
+    /* MEGNÖVELT CSAPATNEVEK */
     .team-name { 
-        font-size: 1.7rem; 
-        font-weight: bold; 
+        font-size: 2.8rem; 
+        font-weight: 900; 
         color: #ffff00; 
         text-transform: uppercase; 
-        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    }
-    .team-score { 
-        font-size: 2rem; 
-        font-weight: bold; 
-        color: #00ff66; 
-        text-shadow: 0 0 8px rgba(0,255,102,0.4);
+        text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
-    /* Táblázat beállításai a különálló 3D kártya-sorokhoz */
+    .team-score { 
+        font-size: 2.4rem; 
+        font-weight: bold; 
+        color: #00ff66; 
+        text-shadow: 0 0 10px rgba(0,255,102,0.5);
+        white-space: nowrap;
+    }
+    
     table { 
         width: 100%; 
         border-collapse: separate; 
-        border-spacing: 0 5px; /* Sorok közötti függőleges rés */
+        border-spacing: 0 4px; 
         font-family: 'Courier New', Courier, monospace;
     }
     th { 
         color: #9cb0d4; 
-        padding: 4px 6px; 
-        font-size: 1.1rem; 
+        padding: 2px 6px; 
+        font-size: 1.05rem; 
         text-transform: uppercase;
         letter-spacing: 1px;
     }
     
-    /* 3D Kártya hatás a játékos soroknak */
     tbody tr {
         background: linear-gradient(180deg, #002866 0%, #001840 100%);
         box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
         border-radius: 6px;
     }
     
-    /* Lekerekített sarkok a sorok szélén */
     tbody tr td:first-child {
         border-top-left-radius: 6px;
         border-bottom-left-radius: 6px;
@@ -131,9 +138,9 @@
     }
 
     td { 
-        padding: 7px 4px; 
+        padding: 5px 4px; 
         text-align: center; 
-        font-size: 1.45rem; 
+        font-size: 1.35rem; 
         font-weight: bold; 
         border: none;
     }
@@ -142,19 +149,19 @@
         text-align: left; 
         font-family: sans-serif; 
         color: #ffffff; 
-        width: 42%; 
+        width: 40%; 
         white-space: nowrap; 
         overflow: hidden; 
         text-overflow: ellipsis; 
-        font-size: 1.35rem;
-        padding-left: 10px; /* Belső eltolás a szélétől */
+        font-size: 1.25rem;
+        padding-left: 10px;
         text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
     
     .color-green { color: #00ff66 !important; text-shadow: 0 0 8px rgba(0, 255, 102, 0.6); }
     .color-yellow { color: #ffff00 !important; text-shadow: 0 0 8px rgba(255, 255, 0, 0.6); }
     .color-red { color: #ff4444 !important; text-shadow: 0 0 8px rgba(255, 68, 68, 0.6); }
-    .total-col { font-weight: bold; font-size: 1.55rem; padding-right: 8px; }
+    .total-col { font-weight: bold; font-size: 1.45rem; padding-right: 8px; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -245,7 +252,7 @@ function renderBoard(teams) {
             '<table>' +
                 '<thead>' +
                     '<tr>' +
-                        '<th style="text-align:left; width: 42%; padding-left:10px;">Név</th>' +
+                        '<th style="text-align:left; width: 40%; padding-left:10px;">Név</th>' +
                         '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
                         '<th>Üres</th>' +
                         '<th>Össz.</th>' +

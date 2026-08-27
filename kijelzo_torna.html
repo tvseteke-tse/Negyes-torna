@@ -36,12 +36,11 @@
         flex-direction: column;
     }
     
-    /* MEGNÖVELT, KÉT SOROS TORNA CÍM */
     h1 {
         text-align: center;
-        margin: 0 0 8px 0;
-        font-size: 3rem;
-        line-height: 1.15;
+        margin: 0 0 6px 0;
+        font-size: 2.8rem;
+        line-height: 1.1;
         font-weight: 900;
         color: #ffff00;
         letter-spacing: 2px;
@@ -85,13 +84,13 @@
         max-width: 70%;
     }
     .team-logo {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         object-fit: contain;
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
     .team-name { 
-        font-size: 2.8rem; 
+        font-size: 2.6rem; 
         font-weight: 900; 
         color: #ffff00; 
         text-transform: uppercase; 
@@ -103,7 +102,7 @@
         text-overflow: ellipsis;
     }
     .team-score { 
-        font-size: 2.4rem; 
+        font-size: 2.3rem; 
         font-weight: bold; 
         color: #00ff66; 
         text-shadow: 0 0 10px rgba(0,255,102,0.5);
@@ -113,13 +112,13 @@
     table { 
         width: 100%; 
         border-collapse: separate; 
-        border-spacing: 0 4px; 
+        border-spacing: 0 6px; /* MEGNÖVELT RÉG A SOROK KÖZÖTT */
         font-family: 'Courier New', Courier, monospace;
     }
     th { 
         color: #9cb0d4; 
         padding: 2px 6px; 
-        font-size: 1.05rem; 
+        font-size: 1.1rem; 
         text-transform: uppercase;
         letter-spacing: 1px;
     }
@@ -139,10 +138,11 @@
         border-bottom-right-radius: 6px;
     }
 
+    /* MAGASABB MEGJELENÉS A CELLÁKNÁL */
     td { 
-        padding: 5px 4px; 
+        padding: 8px 4px; 
         text-align: center; 
-        font-size: 1.35rem; 
+        font-size: 1.5rem; 
         font-weight: bold; 
         border: none;
     }
@@ -155,15 +155,15 @@
         white-space: nowrap; 
         overflow: hidden; 
         text-overflow: ellipsis; 
-        font-size: 1.25rem;
-        padding-left: 10px;
+        font-size: 1.4rem;
+        padding-left: 12px;
         text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
     
     .color-green { color: #00ff66 !important; text-shadow: 0 0 8px rgba(0, 255, 102, 0.6); }
     .color-yellow { color: #ffff00 !important; text-shadow: 0 0 8px rgba(255, 255, 0, 0.6); }
     .color-red { color: #ff4444 !important; text-shadow: 0 0 8px rgba(255, 68, 68, 0.6); }
-    .total-col { font-weight: bold; font-size: 1.45rem; padding-right: 8px; }
+    .total-col { font-weight: bold; font-size: 1.6rem; padding-right: 8px; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -194,7 +194,6 @@ db.ref('csapat4_bowling').on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         if (data.title) {
-            // Megtartjuk a két soros formátumot, ha Firebase-ből jön a szöveg
             document.getElementById('boardTitle').innerHTML = data.title.toUpperCase().replace('\n', '<br>');
         }
         if (data.teams) renderBoard(data.teams);
@@ -257,7 +256,7 @@ function renderBoard(teams) {
             '<table>' +
                 '<thead>' +
                     '<tr>' +
-                        '<th style="text-align:left; width: 40%; padding-left:10px;">Név</th>' +
+                        '<th style="text-align:left; width: 40%; padding-left:12px;">Név</th>' +
                         '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
                         '<th>Üres</th>' +
                         '<th>Össz.</th>' +

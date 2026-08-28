@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>4 Csapatos Teke - Élő Kijelző (1920x513)</title>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    html, body {
+        width: 1920px;
+        height: 513px;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #000d21;
+        color: #ffff00;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        user-select: none;
+    }
+
+    .board-container {
+        width: 100%;
+        height: 100%;
+        background: #00173d;
+        border: 2px solid #0044aa;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+    
+    /* Kompakt címsor, hogy maradjon hely a táblázatoknak */
+    h1 {
+        text-align: center;
+        margin: 0 0 6px 0;
+        font-size: 1.6rem;
+        line-height: 1.1;
+        font-weight: 900;
+        color: #ffff00;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* 1x4-es elrendezés egymás mellett a 1920px szélesség kihasználására */
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        flex-grow: 1;
+        height: calc(100% - 35px);
+    }
+
+    .team-box {
+        background: rgba(0, 20, 55, 0.95);
+        border: 2px solid #003b99;
+        border-radius: 8px;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #0044aa;
+        padding-bottom: 4px;
+        margin-bottom: 6px;
+        flex-shrink: 0;
+    }
+
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 70%;
+    }
+
+    .team-name { 
+        font-size: 1.25rem;
+        font-weight: 900; 
+        color: #ffff00; 
+        text-transform: uppercase; 
+        text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .team-score { 
+        font-size: 1.25rem;
+        font-weight: bold; 
+        color: #00ff66; 
+        text-shadow: 0 0 8px rgba(0,255,102,0.5);
+        white-space: nowrap;
+    }
+    
+    table { 
+        width: 100%; 
+        border-collapse: separate; 
+        border-spacing: 0 3px;
+        font-family: 'Courier New', Courier, monospace;
+        table-layout: fixed;
+    }
+
+    th { 
+        color: #9cb0d4; 
+        padding: 2px 2px; 
+        font-size: 0.8rem; 
+        text-transform: uppercase;
+        letter-spacing: 0px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    
+    tbody tr {
+        background: linear-gradient(180deg, #002866 0%, #001840 100%);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    td { 
+        padding: 5px 2px; 
+        text-align: center; 
+        font-size: 1.15rem; 
+        font-weight: bold; 
+        border: none;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    
+    .name-col { 
+        text-align: left; 
+        font-family: 'Segoe UI', Arial, sans-serif; 
+        color: #ffffff; 
+        width: 36%; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        font-size: 0.95rem;
+        padding-left: 4px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+    
+    .color-green { color: #00ff66 !important; text-shadow: 0 0 6px rgba(0, 255, 102, 0.6); }
+    .color-yellow { color: #ffff00 !important; text-shadow: 0 0 6px rgba(255, 255, 0, 0.6); }
+    .color-red { color: #ff4444 !important; text-shadow: 0 0 6px rgba(255, 68, 68, 0.6); }
+    .total-col { font-weight: bold; font-size: 1.2rem; }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="board-container">
+    <h1 id="boardTitle">FELKÉSZÜLÉSI NÉGYES TORNA | 08.29 | TISZAKÉCSKE</h1>
+    <div class="teams-grid" id="boardGrid"></div>
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyD8o7xyCtxTJlQcM8z-29XTBOpBXrYbjOM",
+    authDomain: "teke-eredmenyek.firebaseapp.com",
+    databaseURL: "https://teke-eredmenyek-default-rtdb.firebaseio.com",
+    projectId: "teke-eredmenyek",
+    storageBucket: "teke-eredmenyek.firebasestorage.app"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+db.ref('csapat4_bowling').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        if (data.title) {
+            // Címsor tisztítása egy sorra
+            document.getElementById('boardTitle').innerHTML = data.title.toUpperCase().replace(/<br\s*[\/]?>|\n/gi, ' | ');
+        }
+        if (data.teams) renderBoard(data.teams);
+    }
+});
+
+function getSetColorClass(val) {
+    if (val === 0) return '';
+    if (val > 150) return 'color-green';
+    if (val < 120) return 'color-red';
+    return 'color-yellow';
+}
+
+function getTotalColorClass(val) {
+    if (val === 0) return '';
+    if (val > 600) return 'color-green';
+    if (val < 500) return 'color-red';
+    return 'color-yellow';
+}
+
+function getUresColorClass(val) {
+    if (val === 0) return 'color-green';
+    if (val <= 5) return 'color-yellow';
+    return 'color-red';
+}
+
+function renderBoard(teams) {
+    const sorted = [...teams].sort((a, b) => {
+        if (b.total !== a.total) return b.total - a.total;
+        return a.ures - b.ures;
+    });
+
+    const grid = document.getElementById('boardGrid');
+    grid.innerHTML = '';
+
+    sorted.forEach((team, rankIdx) => {
+        const box = document.createElement('div');
+        box.className = 'team-box';
+
+        let rowsHTML = '';
+        team.players.forEach(p => {
+            const setsHTML = p.sets.map(s => s === 0 ? '<td>-</td>' : '<td class="' + getSetColorClass(s) + '">' + s + '</td>').join('');
+            rowsHTML += '<tr>' +
+                '<td class="name-col">' + p.name + '</td>' +
+                setsHTML +
+                '<td class="' + getUresColorClass(p.ures) + '">' + p.ures + '</td>' +
+                '<td class="total-col ' + getTotalColorClass(p.total) + '">' + p.total + '</td>' +
+            '</tr>';
+        });
+
+        box.innerHTML = '<div class="team-header">' +
+                '<div class="team-info">' +
+                    '<span class="team-name">' + (rankIdx + 1) + '. ' + team.name + '</span>' +
+                '</div>' +
+                '<span class="team-score">' + team.total + ' fa</span>' +
+            '</div>' +
+            '<table>' +
+                '<thead>' +
+                    '<tr>' +
+                        '<th style="text-align:left; width: 36%; padding-left:4px;">Név</th>' +
+                        '<th>S1</th><th>S2</th><th>S3</th><th>S4</th>' +
+                        '<th>Ü</th>' +
+                        '<th>Össz</th>' +
+                    '</tr>' +
+                '</thead>' +
+                '<tbody>' +
+                    rowsHTML +
+                '</tbody>' +
+            '</table>';
+        grid.appendChild(box);
+    });
+}
+</script>
+</body>
+</html>

@@ -81,16 +81,18 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        max-width: 70%;
+        max-width: 80%; /* Megnövelve, hogy a nagyobb név kényelmesebben elférjen */
     }
     .team-logo {
-        width: 48px;
-        height: 48px;
+        width: 54px; /* Kicsit igazítva a nagyobb szöveghez */
+        height: 54px;
         object-fit: contain;
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
+    
+    /* MEGNÖVELT CSAPATNÉV MÉRITEK */
     .team-name { 
-        font-size: 2.6rem; 
+        font-size: 3.2rem; /* 2.6rem helyett 3.2rem */
         font-weight: 900; 
         color: #ffff00; 
         text-transform: uppercase; 
@@ -102,7 +104,7 @@
         text-overflow: ellipsis;
     }
     .team-score { 
-        font-size: 2.3rem; 
+        font-size: 2.6rem; /* Csapatnévhez igazítva */
         font-weight: bold; 
         color: #00ff66; 
         text-shadow: 0 0 10px rgba(0,255,102,0.5);
@@ -112,7 +114,7 @@
     table { 
         width: 100%; 
         border-collapse: separate; 
-        border-spacing: 0 5px; /* MEGNÖVELT RÉG A SOROK KÖZÖTT */
+        border-spacing: 0 5px;
         font-family: 'Courier New', Courier, monospace;
     }
     th { 
@@ -138,7 +140,6 @@
         border-bottom-right-radius: 6px;
     }
 
-    /* MAGASABB MEGJELENÉS A CELLÁKNÁL */
     td { 
         padding: 8px 4px; 
         text-align: center; 

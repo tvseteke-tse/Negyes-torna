@@ -49,6 +49,13 @@
         font-weight: bold;
     }
     .btn:hover { background: #1d4ed8; }
+    
+    /* Új gomb stílusa */
+    .btn-print {
+        background: #059669;
+    }
+    .btn-print:hover { background: #047857; }
+
     .teams-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
@@ -107,6 +114,8 @@
         <label style="font-weight:bold;">Torna neve:</label>
         <input type="text" id="tournamentTitle" value="4 CSAPATOS TORNA">
         <button class="btn" onclick="saveData()">Mentés & Kijelző Frissítése</button>
+        <!-- ÚJ NYOMTATÁS GOMB -->
+        <button class="btn btn-print" onclick="printDisplayA3()">🖨️ Kijelző Nyomtatása (A3 PDF)</button>
     </div>
 
     <div class="teams-grid" id="teamsContainer"></div>
@@ -253,6 +262,43 @@ function showStatus(msg) {
     const el = document.getElementById('statusMsg');
     el.innerText = msg;
     setTimeout(() => { el.innerText = ''; }, 2000);
+}
+
+/* ÚJ FUNKCIÓ: A3 PDF Nyomtatás gomb működése */
+function printDisplayA3() {
+    saveData(); // Mentés futtatása előtte, hogy a legfrissebb adatok legyenek a kijelzőn
+    
+    // Megnyitjuk a kijelzőt egy új, rejtett/háttér ablakban
+    const printWin = window.open('https://tvseteke-tse.github.io/Negyes-torna/kijelzo_torna.html', '_blank');
+    
+    if (!printWin) {
+        alert("Kérlek engedélyezd a felugró ablakokat (pop-up) a böngésződben a nyomtatáshoz!");
+        return;
+    }
+
+    printWin.onload = function() {
+        // Dinamikusan beszúrunk egy A3-as fekvő nyomtatási CSS-t a kijelző oldalba
+        const style = printWin.document.createElement('style');
+        style.innerHTML = `
+            @media print {
+                @page {
+                    size: A3 landscape;
+                    margin: 0;
+                }
+                body {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+            }
+        `;
+        printWin.document.head.appendChild(style);
+
+        // Kicsi várakozás, hogy a képek és a Firebase adatok biztosan betöltsenek
+        setTimeout(() => {
+            printWin.focus();
+            printWin.print();
+        }, 1200);
+    };
 }
 </script>
 </body>
